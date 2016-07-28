@@ -32,9 +32,9 @@ macro callLBFGS(cmd)
                Ptr{Float64},
                Ptr{Float64},
                Ptr{Int32},
-               Ptr{Uint8},
+               Ptr{UInt8},
                Ptr{Int32},
-               Ptr{Uint8},
+               Ptr{UInt8},
                Ptr{Bool},
                Ptr{Int32},
                Ptr{Float64} ),
@@ -60,7 +60,7 @@ macro callLBFGS(cmd)
 end
 
     
-function lbfgsb (ogFunc!::Function,
+function lbfgsb(ogFunc!::Function,
                  x::Array;
                  lb = [],
                  ub = [],
@@ -103,8 +103,8 @@ function lbfgsb (ogFunc!::Function,
     # structures used by the L-BFGS-B routine.
     wa = [convert(Float64, 0.0) for i = 1:(2*m[1] + 5)*n[1] + 12*m[1]*(m[1] + 1)];
     iwa = [convert(Int32, 0) for i = 1:3*n[1]];
-    task = [convert(Uint8, 0) for i =1:60];
-    csave = [convert(Uint8, 0) for i =1:60];
+    task = [convert(UInt8, 0) for i =1:60];
+    csave = [convert(UInt8, 0) for i =1:60];
     lsave = [convert(Bool, 0) for i=1:4];
     isave = [convert(Int32, 0) for i=1:44];
     dsave = [convert(Float64, 0.0) for i=1:29];
@@ -146,7 +146,7 @@ function lbfgsb (ogFunc!::Function,
 end # function lbfgsb
 
 
-function lbfgsb (objFunc::Function,
+function lbfgsb(objFunc::Function,
                  gradFunc!::Function,
                  x::Array;
                  lb = [],
