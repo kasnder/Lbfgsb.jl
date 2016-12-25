@@ -118,22 +118,22 @@ function lbfgsb(ogFunc!::Function,
 
     while true
 
-        if task[1] == 'F'
+        if task[1] == UInt32('F')
             f[1] = convert( Float64, ogFunc!(x,g) );
             c += 1;
             
-        elseif task[1] == 'N'
+        elseif task[1] == UInt32('N')
             t += 1;
             if t >= maxiter # exceed maximum number of iteration
                 @callLBFGS "STOP"
                 break;
             end
-        elseif task[1] == 'C' # convergence
+        elseif task[1] == UInt32('C') # convergence
             break;
-        elseif task[1] == 'A'
+        elseif task[1] == UInt32('A')
             status = "abnormal";
             break;
-        elseif task[1] == 'E'
+        elseif task[1] == UInt32('E')
             status = "error";
             break;
         end
