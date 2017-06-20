@@ -7,56 +7,55 @@ else
 end
 
 # package code goes here
-macro callLBFGS(cmd)
-    quote
-        if length($cmd) != 0
-            @simd for i = 1:length($cmd)
-                task[i] = ($cmd)[i];
-            end
-            @simd for i = length($cmd)+1:60
-                task[i] = ' ';
-            end
+function callLBFGS(cmd, n, m, x, lb, ub, btype, f, g, factr, pgtol, wa, iwa,
+                   task, iprint, csave, lsave, isave, dsave)
+    if length(cmd) != 0
+        for i = 1:length(cmd)
+            task[i] = (cmd)[i];
         end
-
-        ccall((:setulb_, liblbfgsbf),
-              Void,
-              (Ptr{Int32},
-               Ptr{Int32},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Int32},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Float64},
-               Ptr{Int32},
-               Ptr{UInt8},
-               Ptr{Int32},
-               Ptr{UInt8},
-               Ptr{Bool},
-               Ptr{Int32},
-               Ptr{Float64} ),
-              n,
-              m,
-              x,
-              lb,
-              ub,
-              btype,
-              f,
-              g,
-              factr,
-              pgtol,
-              wa,
-              iwa,
-              task,
-              iprint,
-              csave,
-              lsave,
-              isave,
-              dsave );
+        for i = length(cmd)+1:60
+            task[i] = ' ';
+        end
     end
+
+    ccall((:setulb_, liblbfgsbf),
+          Void,
+          (Ptr{Int32},
+           Ptr{Int32},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Int32},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Float64},
+           Ptr{Int32},
+           Ptr{UInt8},
+           Ptr{Int32},
+           Ptr{UInt8},
+           Ptr{Bool},
+           Ptr{Int32},
+           Ptr{Float64} ),
+          n,
+          m,
+          x,
+          lb,
+          ub,
+          btype,
+          f,
+          g,
+          factr,
+          pgtol,
+          wa,
+          iwa,
+          task,
+          iprint,
+          csave,
+          lsave,
+          isave,
+          dsave );
 end
 
     
@@ -109,7 +108,8 @@ function lbfgsb(ogFunc!::Function,
     isave = [convert(Int32, 0) for i=1:44];
     dsave = [convert(Float64, 0.0) for i=1:29];
 
-    @callLBFGS "START"
+    callLBFGS("START", n, m, x, lb, ub, btype, f, g, factr, pgtol,
+              wa, iwa, task, iprint, csave, lsave, isave, dsave)
 
     status = "success";
 
@@ -125,7 +125,8 @@ function lbfgsb(ogFunc!::Function,
         elseif task[1] == UInt32('N')
             t += 1;
             if t >= maxiter # exceed maximum number of iteration
-                @callLBFGS "STOP"
+                callLBFGS("STOP", n, m, x, lb, ub, btype, f, g, factr, pgtol,
+                          wa, iwa, task, iprint, csave, lsave, isave, dsave)
                 break;
             end
         elseif task[1] == UInt32('C') # convergence
@@ -138,7 +139,8 @@ function lbfgsb(ogFunc!::Function,
             break;
         end
 
-        @callLBFGS ""
+        callLBFGS("", n, m, x, lb, ub, btype, f, g, factr, pgtol,
+                  wa, iwa, task, iprint, csave, lsave, isave, dsave)
     end
 
     return (f[1], x, t, c, status)
