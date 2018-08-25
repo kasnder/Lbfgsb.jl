@@ -19,7 +19,7 @@ function callLBFGS(cmd, n, m, x, lb, ub, btype, f, g, factr, pgtol, wa, iwa,
     end
 
     ccall((:setulb_, liblbfgsbf),
-          Void,
+          Nothing,
           (Ptr{Int32},
            Ptr{Int32},
            Ptr{Float64},
